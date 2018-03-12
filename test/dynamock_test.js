@@ -62,6 +62,23 @@ describe('Dynamock Mock Interface', () => {
         });
     });
 
+    describe('clearTableContents', () => {
+        it('Should remove all entries from a table.', (done) => {
+            dynamoInstance.addTable(tableName, testModelSchema);
+
+            /* Add a record to the table */
+            const exampleRecord = { id: 'burrito', name: { first: 'tony_the', last: 'tiger' } };
+            dynamoInstance.context[tableName].push(exampleRecord);
+            expect(dynamoInstance.context[tableName].length).to.eql(1);
+
+            /* Clear all table contents. */
+            dynamoInstance.clearTableContents();
+            expect(dynamoInstance.context[tableName].length).to.eql(0);
+
+            done();
+        });
+    });
+
     describe('addTable', () => {
         it('Should succesfully insert a table and schema - initializing the contents to nothing.', (done) => {
             dynamoInstance.addTable(tableName, testModelSchema);
