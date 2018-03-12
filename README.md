@@ -38,9 +38,11 @@ const methodToMocks = [
     'update'
 ];
 
+/* You will also need to pass in your Mocked AWS context like so */
+const AWS = require('aws-sdk-mock');
 before((done) => {
 
-    const dynamockInstance = new Dynamock()
+    const dynamockInstance = new Dynamock(AWS)
         .createTables(mockTablesToCreate)
         .mockMethods(methodsToMock);
 
