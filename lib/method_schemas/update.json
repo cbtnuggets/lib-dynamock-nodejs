@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+        "title": "UpdateItem Schema",
+        "version": "1.0",
+        "validation": "https://www.npmjs.com/package/json-schema",
+        "type": "object",
+        "properties": {
+            "TableName": {
+                "type": { "$ref": "#/definitions/nonEmptyString" }
+            },
+            "Key": {
+                "type": "Object",
+                "properties": {},
+                "additionalProperties": true
+            },
+            "UpdateExpression": {
+                "type": "Object",
+                "properties": {},
+                "additionalProperties": true
+            },
+            "ExpressionAttributeValues": {
+                "type": "Object",
+                "properties": {},
+                "additionalProperties": true
+            },
+            "ExpressionAttributeNames": {
+                "type": "Object",
+                "properties": {},
+                "additionalProperties": true
+            }
+        },
+        "required": [
+            "Key",
+            "TableName",
+            "UpdateExpression",
+            "ExpressionAttributeValues",
+            "ExpressionAttributeNames"
+        ],
+        "definitions": {
+            "nonEmptyString": {
+                "type": "string",
+                "minLength": 1
+            }
+        },
+        "additionalProperties": false
+}
