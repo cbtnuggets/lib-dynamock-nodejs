@@ -1,6 +1,7 @@
 process.env.NODE_ENV = 'test';
 
 const Dynamock = require('../lib/core');
+const AWS = require('aws-sdk-mock');
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -15,7 +16,7 @@ describe('Dynamock', () => {
     });
 
     beforeEach((done) => {
-        dynamock = new Dynamock();
+        dynamock = new Dynamock(AWS);
         done();
     });
 
@@ -31,7 +32,7 @@ describe('Dynamock', () => {
     describe('Constructor', () => {
         it('Should properly create an instance of the class and initialize it with starting values.', (done) => {
             /* Should have all supported methods */
-            expect(dynamock).to.have.property('awsInstance');
+            expect(dynamock).to.have.property('AWS');
             expect(dynamock).to.have.property('dynamockInstance');
             expect(dynamock).to.have.property('createTables');
             expect(dynamock).to.have.property('mockMethods');
