@@ -6,6 +6,9 @@ This Library was designed with the intention to be a sort of `Mockgoose` like im
 work with models since you're simply making API Calls to the AWS SDK. Wouldn't it be nice if you could mock out those API calls to interact with an in-memory Database? Allowing your tests to 1) Validate that your
 calls to the AWS Dynamo Document Client are correct AND 2) Mimic the actual Document Client calls! Allowing you to store Dynamo Models within your tests and interact with them.
 
+
+
+
 ### Implementing Dynamock in your Mocha Tests
 Dynamock should make your life testing DynamoDB interactions wayyyy easier. The code below shows utilizing Dynamock within a Mocha test suite.
 
@@ -58,6 +61,20 @@ This repository was created over the course of a day and is in what I would decl
   -Update
   -Query
   -Delete
+
+###### Query Operator
+In the world of DynamoDB there is a such a thing as Conditional Operators (=, >=, <=, !=, begins_with, between), unfortunatly Dynamocks implementation is in it's infancy
+and only supports the following Conditional Operators for QueryItem() calls.
+  -=
+  -begins_with
+  -between
+
+Also note that you can combine multiple Conditional Operators for an example query such as
+
+```javascript
+const conditionalOperator = 'begins_with(#complex_field, :v_state) and #complex_field between :v_start and :v_stop';
+```
+
 
 The implementations of these methods are explictly defined to what was needed in the initial implementation for `service-exam-provider` and could potentially be lacking the functionalities needed by yourself.
 
