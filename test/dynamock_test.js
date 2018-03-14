@@ -123,7 +123,7 @@ describe('Dynamock Mock Interface', () => {
                         const dbContents = dynamoInstance.getContext();
                         expect(dbContents[tableName].length).to.eql(1);
                         /* Compare the item in the context to the item we tried to PUT. */
-                        expect(JSON.stringify(dbContents[tableName][0])).to.eql(JSON.stringify(PutParams.Item));
+                        expect(JSON.stringify(dbContents[tableName][0])).to.eql(JSON.stringify(results));
                         done();
                     })
                     .catch((err) => {
