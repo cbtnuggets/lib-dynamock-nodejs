@@ -12,7 +12,8 @@ const testModelSchema = {
         first: null,
         last: null
     },
-    full_name: null
+    full_name: null,
+    complex_field: null
 };
 
 const DynamoContentMock = require('../lib/dynamo_method_mocks');
@@ -67,7 +68,13 @@ describe('Dynamock Mock Interface', () => {
             dynamoInstance.addTable(tableName, testModelSchema);
 
             /* Add a record to the table */
-            const exampleRecord = { id: 'burrito', name: { first: 'tony_the', last: 'tiger' } };
+            const exampleRecord = {
+                id: 'burrito',
+                name: {
+                    first: 'tony_the',
+                    last: 'tiger'
+                }
+            };
             dynamoInstance.context[tableName].push(exampleRecord);
             expect(dynamoInstance.context[tableName].length).to.eql(1);
 
@@ -147,7 +154,13 @@ describe('Dynamock Mock Interface', () => {
             it('should successfully retrieve an item in the specified table.', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 /* Lets manually insert our record. */
-                const exampleRecord = { id: 'burrito', name: { first: 'tony_the', last: 'tiger' } };
+                const exampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    }
+                };
                 dynamoInstance.context[tableName].push(exampleRecord);
                 const GetParams = {
                     Key: {
@@ -188,7 +201,13 @@ describe('Dynamock Mock Interface', () => {
             it('should successfully remove an item in the specified table.', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 /* Lets manually insert our record. */
-                const exampleRecord = { id: 'burrito', name: { first: 'tony_the', last: 'tiger' } };
+                const exampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    }
+                };
                 dynamoInstance.context[tableName].push(exampleRecord);
 
                 const DeleteParams = {
@@ -198,13 +217,17 @@ describe('Dynamock Mock Interface', () => {
                     TableName: tableName
                 };
                 /* Our record should exist within the context. */
-                expect(dynamoInstance.getContext()).to.eql({ [tableName]: [exampleRecord] });
+                expect(dynamoInstance.getContext()).to.eql({
+                    [tableName]: [exampleRecord]
+                });
 
                 dynamoInstance.invoke('delete', DeleteParams, tableName)
                     .then((results) => {
                         expect(results).to.eql([]);
                         /* And now our record should be gone forever. */
-                        expect(dynamoInstance.getContext()).to.eql({ [tableName]: [] });
+                        expect(dynamoInstance.getContext()).to.eql({
+                            [tableName]: []
+                        });
                         done();
                     })
                     .catch((err) => {
@@ -235,7 +258,13 @@ describe('Dynamock Mock Interface', () => {
             it('should successfully update attributes on an item in the specified table.', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 /* Lets manually insert our record. */
-                const exampleRecord = { id: 'burrito', name: { first: 'tony_the', last: 'tiger' } };
+                const exampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    }
+                };
                 dynamoInstance.context[tableName].push(exampleRecord);
 
                 const UpdateParams = {
@@ -256,12 +285,20 @@ describe('Dynamock Mock Interface', () => {
                 };
 
                 /* Our record should exist within the context. */
-                expect(dynamoInstance.getContext()).to.eql({ [tableName]: [exampleRecord] });
+                expect(dynamoInstance.getContext()).to.eql({
+                    [tableName]: [exampleRecord]
+                });
 
                 dynamoInstance.invoke('update', UpdateParams, tableName)
                     .then((results) => {
                         /* it is possible that we aren't saving the values correctly... */
-                        expect(dynamoInstance.getContext()[tableName]).to.eql([{ id: 'burrito', name: { first: 'bob', last: 'the_builder' } }]);
+                        expect(dynamoInstance.getContext()[tableName]).to.eql([{
+                            id: 'burrito',
+                            name: {
+                                first: 'bob',
+                                last: 'the_builder'
+                            }
+                        }]);
                         done();
                     })
                     .catch((err) => {
@@ -295,7 +332,14 @@ describe('Dynamock Mock Interface', () => {
             it('should successfully run an advanced Query attributes on an item in the specified table.', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 /* Lets manually insert our record. */
-                const exampleRecord = { id: 'burrito', name: { first: 'tony_the', last: 'tiger' }, full_name: 'tony_the_tiger' };
+                const exampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    },
+                    full_name: 'tony_the_tiger'
+                };
                 dynamoInstance.context[tableName].push(exampleRecord);
 
                 const QueryParams = {
@@ -319,6 +363,160 @@ describe('Dynamock Mock Interface', () => {
                     });
             });
 
+            it('should support an advanced Query on an item in the specified table. (begins_with)', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+                /* Lets manually insert our record. */
+                const timestamp = '2018-03-13T17:48:40.178Z';
+                const state = 'created';
+                const exampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    },
+                    full_name: 'tony_the_tiger',
+                    complex_field: `${state}_${timestamp}`
+                };
+                const badRecord = _.cloneDeep(exampleRecord);
+                badRecord.complex_field = 'non-created_123456';
+
+                dynamoInstance.context[tableName].push(exampleRecord);
+                dynamoInstance.context[tableName].push(badRecord);
+
+                const QueryParams = {
+                    TableName: tableName,
+                    IndexName: 'test-secondary-index',
+                    KeyConditionExpression: 'begins_with(#complex_field, :v_state)',
+                    ExpressionAttributeNames: {
+                        '#complex_field': 'complex_field'
+                    },
+                    ExpressionAttributeValues: {
+                        ':v_state': state
+                    }
+                };
+
+                /* Our record should exist within the context. */
+                dynamoInstance.invoke('query', QueryParams, tableName)
+                    .then((results) => {
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(results).to.be.instanceof(Array);
+                        expect(results.length).to.eql(1);
+                        expect(results[0]).to.eql(exampleRecord);
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
+            it('should support an advanced Query on an item in the specified table. (BETWEEN)', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+                /* Lets manually insert our record. */
+                const timestamp = '2018-03-13T17:48:40.178Z';
+                const oldTimestamp = '2017-03-13T17:48:40.178Z';
+
+                const timeFrame = {
+                    start: '2018-02-13T17:48:40.178Z',
+                    stop: '2018-04-13T17:48:40.178Z'
+                };
+
+                const newExampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    },
+                    full_name: 'tony_the_tiger',
+                    complex_field: `${timestamp}`
+                };
+                const oldRecord = _.cloneDeep(newExampleRecord);
+                oldRecord.complex_field = `${oldTimestamp}`;
+
+                dynamoInstance.context[tableName].push(newExampleRecord);
+                dynamoInstance.context[tableName].push(oldRecord);
+
+                const QueryParams = {
+                    TableName: tableName,
+                    IndexName: 'test-secondary-index',
+                    KeyConditionExpression: '#complex_field between :v_start and :v_stop',
+                    ExpressionAttributeNames: {
+                        '#complex_field': 'complex_field'
+                    },
+                    ExpressionAttributeValues: {
+                        ':v_start': timeFrame.start,
+                        ':v_stop': timeFrame.stop
+                    }
+                };
+
+                /* Our record should exist within the context. */
+                dynamoInstance.invoke('query', QueryParams, tableName)
+                    .then((results) => {
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(results).to.be.instanceof(Array);
+                        expect(results.length).to.eql(1);
+                        expect(results[0]).to.eql(newExampleRecord);
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
+            it('should support an advanced Query on an item in the specified table with multiple Conditional Operators. (GSI test)', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+                /* Lets manually insert our record. */
+                const timestamp = '2018-03-13T17:48:40.178Z';
+                const oldTimestamp = '2017-03-13T17:48:40.178Z';
+
+                const timeFrame = {
+                    start: '2018-02-13T17:48:40.178Z',
+                    stop: '2018-04-13T17:48:40.178Z'
+                };
+
+                const state = 'created';
+                const newExampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    },
+                    full_name: 'tony_the_tiger',
+                    complex_field: `${state}_${timestamp}`
+                };
+                const oldRecord = _.cloneDeep(newExampleRecord);
+                oldRecord.complex_field = `${state}_${oldTimestamp}`;
+
+                dynamoInstance.context[tableName].push(newExampleRecord);
+                dynamoInstance.context[tableName].push(oldRecord);
+
+                const QueryParams = {
+                    TableName: tableName,
+                    IndexName: 'test-secondary-index',
+                    KeyConditionExpression: 'begins_with(#complex_field, :v_state) and #complex_field between :v_start and :v_stop',
+                    ExpressionAttributeNames: {
+                        '#complex_field': 'complex_field'
+                    },
+                    ExpressionAttributeValues: {
+                        ':v_state': state,
+                        ':v_start': `${state}_${timeFrame.start}`,
+                        ':v_stop': `${state}_${timeFrame.stop}`
+                    }
+                };
+
+                /* Our record should exist within the context. */
+                dynamoInstance.invoke('query', QueryParams, tableName)
+                    .then((results) => {
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(results).to.be.instanceof(Array);
+                        expect(results.length).to.eql(1);
+                        expect(results[0]).to.eql(newExampleRecord);
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
             it('should unsuccessfully store a request if missing a required parameter (Key)', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 const UpdateParams = {
@@ -335,9 +533,12 @@ describe('Dynamock Mock Interface', () => {
                     .catch((err) => {
                         expect(err).to.be.instanceof(Array);
                         expect(err.length).to.eql(1);
-                        expect(_.includes(err[0], 'instance')).to.eql(true);
+                        expect(
+                        _.includes(err[0], 'instance')).to.eql(true);
                         expect(_.includes(err[0], 'Key')).to.eql(true);
-                        done();
+                        done(
+
+                        );
                     });
             });
         });
