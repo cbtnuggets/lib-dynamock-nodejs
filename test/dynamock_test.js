@@ -329,7 +329,7 @@ describe('Dynamock Mock Interface', () => {
             });
         });
         describe('QueryItem', () => {
-            it('should successfully run an advanced Query attributes on an item in the specified table.', (done) => {
+            it('should successfully run an equality operator on a secondary index.', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 /* Lets manually insert our record. */
                 const exampleRecord = {
@@ -340,7 +340,19 @@ describe('Dynamock Mock Interface', () => {
                     },
                     full_name: 'tony_the_tiger'
                 };
+
+                const exampleRecordDos = {
+                    id: 'burrito',
+                    name: {
+                        first: 'jack_the',
+                        last: 'ripper'
+                    },
+                    full_name: 'jack_the_ripper'
+                };
+
+
                 dynamoInstance.context[tableName].push(exampleRecord);
+                dynamoInstance.context[tableName].push(exampleRecordDos);
 
                 const QueryParams = {
                     TableName: tableName,
@@ -355,6 +367,8 @@ describe('Dynamock Mock Interface', () => {
                 dynamoInstance.invoke('query', QueryParams, tableName)
                     .then((results) => {
                         /* it is possible that we aren't saving the values correctly... */
+                        expect(results).to.be.instanceof(Array);
+                        expect(results.length).to.eql(1);
                         expect(results[0]).to.eql(exampleRecord);
                         done();
                     })
