@@ -171,7 +171,8 @@ describe('Dynamock Mock Interface', () => {
 
                 dynamoInstance.invoke('get', GetParams, tableName)
                     .then((results) => {
-                        expect(results).to.eql(exampleRecord);
+                        /* Expect it to be wrapped up as a DynamoDB Item. */
+                        expect(results).to.eql({ Item: exampleRecord });
                         done();
                     })
                     .catch((err) => {
@@ -325,6 +326,80 @@ describe('Dynamock Mock Interface', () => {
                         expect(_.includes(err[0], 'instance')).to.eql(true);
                         expect(_.includes(err[0], 'Key')).to.eql(true);
                         done();
+                    });
+            });
+
+            it('Should support updates occuring on nested attributes', (done) => {
+                const nestedSchema = _.cloneDeep(testModelSchema);
+                nestedSchema.nested = {
+                    valueOne: null,
+                    nestedTwo: {
+                        food: null
+                    }
+                };
+                dynamoInstance.addTable(tableName, nestedSchema);
+
+                const exampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    },
+                    nested: {
+                        valueOne: 'one',
+                        nestedTwo: {
+                            food: 'tofu'
+                        }
+                    }
+                };
+                const updatedValueOne = 'eno';
+                const updatedFood = 'burritosOfCourse';
+
+                dynamoInstance.context[tableName].push(exampleRecord);
+
+                const UpdateParams = {
+                    Key: {
+                        id: 'burrito'
+                    },
+                    TableName: tableName,
+                    UpdateExpression: 'set #nested.#nestedTwo.#food = :value_1, #nested.#valueOne = :value_2',
+                    ExpressionAttributeNames: {
+                        '#name': 'name',
+                        '#nested': 'nested',
+                        '#nestedTwo': 'nestedTwo',
+                        '#food': 'food',
+                        '#valueOne': 'valueOne'
+                    },
+                    ExpressionAttributeValues: {
+                        ':value_1': updatedFood,
+                        ':value_2': updatedValueOne
+                    }
+                };
+
+                /* Our record should exist within the context. */
+                expect(dynamoInstance.getContext()).to.eql({
+                    [tableName]: [exampleRecord]
+                });
+
+                dynamoInstance.invoke('update', UpdateParams, tableName)
+                    .then((results) => {
+                        expect(dynamoInstance.getContext()[tableName]).to.eql([{
+                            id: 'burrito',
+                            name: {
+                                first: 'tony_the',
+                                last: 'tiger'
+                            },
+                            nested: {
+                                valueOne: 'eno',
+                                nestedTwo: {
+                                    food: 'burritosOfCourse'
+                                }
+                            }
+                        }]);
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
                     });
             });
         });
