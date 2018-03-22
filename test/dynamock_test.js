@@ -404,7 +404,7 @@ describe('Dynamock Mock Interface', () => {
             });
         });
         describe('QueryItem', () => {
-            it('should successfully run an equality operator on a secondary index.', (done) => {
+            it('should successfully run an equality operator on a secondary index and respond with a DynamoDB format..', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 /* Lets manually insert our record. */
                 const exampleRecord = {
@@ -442,9 +442,14 @@ describe('Dynamock Mock Interface', () => {
                 dynamoInstance.invoke('query', QueryParams, tableName)
                     .then((results) => {
                         /* it is possible that we aren't saving the values correctly... */
-                        expect(results).to.be.instanceof(Array);
-                        expect(results.length).to.eql(1);
-                        expect(results[0]).to.eql(exampleRecord);
+                        expect(results).to.be.instanceof(Object);
+                        expect(results).to.have.property('Count');
+                        expect(results).to.have.property('Items');
+
+                        const { Count: count, Items: items } = results;
+
+                        expect(count).to.eql(1);
+                        expect(items[0]).to.eql(exampleRecord);
                         done();
                     })
                     .catch((err) => {
@@ -488,9 +493,14 @@ describe('Dynamock Mock Interface', () => {
                 dynamoInstance.invoke('query', QueryParams, tableName)
                     .then((results) => {
                         /* it is possible that we aren't saving the values correctly... */
-                        expect(results).to.be.instanceof(Array);
-                        expect(results.length).to.eql(1);
-                        expect(results[0]).to.eql(exampleRecord);
+                        expect(results).to.be.instanceof(Object);
+                        expect(results).to.have.property('Count');
+                        expect(results).to.have.property('Items');
+
+                        const { Count: count, Items: items } = results;
+
+                        expect(count).to.eql(1);
+                        expect(items[0]).to.eql(exampleRecord);
                         done();
                     })
                     .catch((err) => {
@@ -541,9 +551,14 @@ describe('Dynamock Mock Interface', () => {
                 dynamoInstance.invoke('query', QueryParams, tableName)
                     .then((results) => {
                         /* it is possible that we aren't saving the values correctly... */
-                        expect(results).to.be.instanceof(Array);
-                        expect(results.length).to.eql(1);
-                        expect(results[0]).to.eql(newExampleRecord);
+                        expect(results).to.be.instanceof(Object);
+                        expect(results).to.have.property('Count');
+                        expect(results).to.have.property('Items');
+
+                        const { Count: count, Items: items } = results;
+
+                        expect(count).to.eql(1);
+                        expect(items[0]).to.eql(newExampleRecord);
                         done();
                     })
                     .catch((err) => {
@@ -596,9 +611,14 @@ describe('Dynamock Mock Interface', () => {
                 dynamoInstance.invoke('query', QueryParams, tableName)
                     .then((results) => {
                         /* it is possible that we aren't saving the values correctly... */
-                        expect(results).to.be.instanceof(Array);
-                        expect(results.length).to.eql(1);
-                        expect(results[0]).to.eql(newExampleRecord);
+                        expect(results).to.be.instanceof(Object);
+                        expect(results).to.have.property('Count');
+                        expect(results).to.have.property('Items');
+
+                        const { Count: count, Items: items } = results;
+
+                        expect(count).to.eql(1);
+                        expect(items[0]).to.eql(newExampleRecord);
                         done();
                     })
                     .catch((err) => {
