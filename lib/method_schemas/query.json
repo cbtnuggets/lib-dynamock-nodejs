@@ -25,7 +25,6 @@
     },
     "required": [
         "TableName",
-        "IndexName",
         "KeyConditionExpression",
         "ExpressionAttributeValues"
     ],
