@@ -8,6 +8,7 @@ const _ = require('lodash');
 const tableName = 'test-dynamo-table';
 const testModelSchema = {
     id: null,
+    otro_id: null,
     name: {
         first: null,
         last: null
@@ -70,6 +71,7 @@ describe('Dynamock Mock Interface', () => {
             /* Add a record to the table */
             const exampleRecord = {
                 id: 'burrito',
+                otro_id: 'blah',
                 name: {
                     first: 'tony_the',
                     last: 'tiger'
@@ -151,7 +153,7 @@ describe('Dynamock Mock Interface', () => {
         });
 
         describe('GetItem', () => {
-            it('should successfully retrieve an item in the specified table.', (done) => {
+            it('should successfully retrieve an item in the specified table. (hash key)', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 /* Lets manually insert our record. */
                 const exampleRecord = {
@@ -173,6 +175,43 @@ describe('Dynamock Mock Interface', () => {
                     .then((results) => {
                         /* Expect it to be wrapped up as a DynamoDB Item. */
                         expect(results).to.eql({ Item: exampleRecord });
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
+
+            it('should successfully retrieve an item in the specified table with a complex key (hash ?& range).', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+                /* Lets manually insert our record. */
+                const exampleRecord = {
+                    id: 'burrito',
+                    otro_id: 'with_chicken',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    }
+                };
+                const otroRecord = _.cloneDeep(exampleRecord);
+                otroRecord.otro_id = 'with_carnitas';
+
+                dynamoInstance.context[tableName].push(exampleRecord);
+                dynamoInstance.context[tableName].push(otroRecord);
+                const GetParams = {
+                    Key: {
+                        id: 'burrito',
+                        otro_id: 'with_carnitas'
+                    },
+                    TableName: tableName
+                };
+
+                dynamoInstance.invoke('get', GetParams, tableName)
+                    .then((results) => {
+                        /* Expect it to be wrapped up as a DynamoDB Item. */
+                        console.log(results);
+                        expect(results).to.eql({ Item: otroRecord });
                         done();
                     })
                     .catch((err) => {
