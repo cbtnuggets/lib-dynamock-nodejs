@@ -210,7 +210,6 @@ describe('Dynamock Mock Interface', () => {
                 dynamoInstance.invoke('get', GetParams, tableName)
                     .then((results) => {
                         /* Expect it to be wrapped up as a DynamoDB Item. */
-                        console.log(results);
                         expect(results).to.eql({ Item: otroRecord });
                         done();
                     })
@@ -274,6 +273,66 @@ describe('Dynamock Mock Interface', () => {
                         done(err);
                     });
             });
+
+            it('should successfully remove an item in the specified table that has composite keys.', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+                let mockTable = [];
+
+                // Create mockTable 
+                mockTable = dynamoInstance.context[tableName] = [
+                    {
+                        id: 'burrito',
+                        sauce: 'green', 
+                        name: {
+                            first: 'tony_the',
+                            last: 'tiger'
+                        }
+                    },{
+                        id: 'burger',
+                        sauce: 'green', 
+                        name: {
+                            first: 'Matt',
+                            last: 'Man'
+                        }
+                    }
+                ];
+
+                const DeleteParams = {
+                    Key: {
+                        id: 'burrito',
+                        sauce: 'green'
+                    },
+                    TableName: tableName
+                };
+                
+                /* Our record should exist within the context. */
+                expect(dynamoInstance.getContext()).to.eql(
+                    {
+                        [tableName]: mockTable
+                    }
+                );
+
+                dynamoInstance.invoke('delete', DeleteParams, tableName)
+                    .then((results) => {
+                        /* And now our record should be gone forever. */
+                        expect(dynamoInstance.getContext()).to.eql({
+                            [tableName]: [{
+                                id: 'burger',
+                                sauce: 'green', 
+                                name: {
+                                    first: 'Matt',
+                                    last: 'Man'
+                                }
+                            }]
+                        });
+                        done();
+                    })
+                    .catch((err) => {
+                        console.log('err', err); 
+                        done(err);
+                    });
+            });
+
 
             it('should unsuccessfully store a request if missing a required parameter (Key)', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
