@@ -287,7 +287,7 @@ describe('Dynamock Mock Interface', () => {
                             first: 'tony_the',
                             last: 'tiger'
                         }
-                    },{
+                    }, {
                         id: 'burger',
                         sauce: 'green', 
                         name: {
