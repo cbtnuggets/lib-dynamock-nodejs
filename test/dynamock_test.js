@@ -346,6 +346,64 @@ describe('Dynamock Mock Interface', () => {
                     });
             });
 
+            it('Should support update expression with newlines', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+                /* Lets manually insert our record. */
+                const exampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    }
+                };
+                dynamoInstance.context[tableName].push(exampleRecord);
+
+                const UpdateParams = {
+                    Key: {
+                        id: 'burrito'
+                    },
+                    TableName: tableName,
+                    UpdateExpression: `
+                        SET
+                            #name = :value_1
+                            #full_name = :value_2
+                    `,
+                    ExpressionAttributeNames: {
+                        '#name': 'name',
+                        '#full_name': 'full_name'
+                    },
+                    ExpressionAttributeValues: {
+                        ':value_1': {
+                            first: 'bob',
+                            last: 'the_builder'
+                        },
+                        ':value_2': 'bob the_builder'
+                    }
+                };
+
+                /* Our record should exist within the context. */
+                expect(dynamoInstance.getContext()).to.eql({
+                    [tableName]: [exampleRecord]
+                });
+
+                dynamoInstance.invoke('update', UpdateParams, tableName)
+                    .then((results) => {
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(dynamoInstance.getContext()[tableName]).to.eql([{
+                            id: 'burrito',
+                            name: {
+                                first: 'bob',
+                                last: 'the_builder'
+                            },
+                            full_name: 'bob the_builder'
+                        }]);
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
             it('should unsuccessfully store a request if missing a required parameter (Key)', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 const UpdateParams = {
