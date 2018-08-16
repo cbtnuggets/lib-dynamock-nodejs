@@ -499,7 +499,113 @@ describe('Dynamock Mock Interface', () => {
                         done(err);
                     });
             });
+
+            it('should successfully update and return news values when ReturnValues is ALL_NEW.', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+                /* Lets manually insert our record. */
+                const exampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    }
+                };
+
+                dynamoInstance.context[tableName].push(exampleRecord);
+
+                const UpdateParams = {
+                    Key: {
+                        id: 'burrito'
+                    },
+                    TableName: tableName,
+                    UpdateExpression: 'set #name = :value_1',
+                    ExpressionAttributeNames: {
+                        '#name': 'name'
+                    },
+                    ExpressionAttributeValues: {
+                        ':value_1': {
+                            first: 'bob',
+                            last: 'the_builder'
+                        }
+                    },
+                    ReturnValues: 'ALL_NEW'
+                };
+
+                /* Our record should exist within the context. */
+                expect(dynamoInstance.getContext()).to.eql({
+                    [tableName]: [exampleRecord]
+                });
+
+                dynamoInstance.invoke('update', UpdateParams, tableName)
+                    .then(({ Attributes }) => {
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(Attributes).to.deep.equal({
+                            id: 'burrito',
+                            name: {
+                                first: 'bob',
+                                last: 'the_builder'
+                            }
+                        });
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
+            it('should successfully update and return updated values when ReturnValues is UPDATED_NEW.', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+                /* Lets manually insert our record. */
+                const exampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    }
+                };
+
+                dynamoInstance.context[tableName].push(exampleRecord);
+
+                const UpdateParams = {
+                    Key: {
+                        id: 'burrito'
+                    },
+                    TableName: tableName,
+                    UpdateExpression: 'set #name = :value_1',
+                    ExpressionAttributeNames: {
+                        '#name': 'name'
+                    },
+                    ExpressionAttributeValues: {
+                        ':value_1': {
+                            first: 'bob',
+                            last: 'the_builder'
+                        }
+                    },
+                    ReturnValues: 'UPDATED_NEW'
+                };
+
+                /* Our record should exist within the context. */
+                expect(dynamoInstance.getContext()).to.eql({
+                    [tableName]: [exampleRecord]
+                });
+
+                dynamoInstance.invoke('update', UpdateParams, tableName)
+                    .then(({ Attributes }) => {
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(Attributes).to.deep.equal({
+                            name: {
+                                first: 'bob',
+                                last: 'the_builder'
+                            }
+                        });
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
         });
+
         describe('QueryItem', () => {
             it('should successfully run an equality operator on a secondary index and respond with a DynamoDB format..', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);

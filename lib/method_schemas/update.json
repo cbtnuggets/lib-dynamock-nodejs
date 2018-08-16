@@ -27,6 +27,14 @@
                 "type": "Object",
                 "properties": {},
                 "additionalProperties": true
+            },
+            "ReturnValues": {
+                "type": "String",
+                "enum": [
+                    "ALL_NEW",
+                    "UPDATED_NEW"
+                ],
+                "additionalProperties": false
             }
         },
         "required": [
