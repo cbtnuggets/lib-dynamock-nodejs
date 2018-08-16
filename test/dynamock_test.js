@@ -210,7 +210,6 @@ describe('Dynamock Mock Interface', () => {
                 dynamoInstance.invoke('get', GetParams, tableName)
                     .then((results) => {
                         /* Expect it to be wrapped up as a DynamoDB Item. */
-                        console.log(results);
                         expect(results).to.eql({ Item: otroRecord });
                         done();
                     })
