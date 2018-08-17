@@ -499,6 +499,48 @@ describe('Dynamock Mock Interface', () => {
                     });
             });
 
+            it('should create a new record (upsert) if not found', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+
+                const UpdateParams = {
+                    Key: {
+                        id: 'burrito'
+                    },
+                    TableName: tableName,
+                    UpdateExpression: 'set #name = :value_1',
+                    ExpressionAttributeNames: {
+                        '#name': 'name'
+                    },
+                    ExpressionAttributeValues: {
+                        ':value_1': {
+                            first: 'bob',
+                            last: 'the_builder'
+                        }
+                    },
+                    ReturnValues: 'ALL_NEW'
+                };
+
+                dynamoInstance.invoke('update', UpdateParams, tableName)
+                    .then(({ Attributes }) => {
+                        const newRecord = {
+                            id: 'burrito',
+                            name: {
+                                first: 'bob',
+                                last: 'the_builder'
+                            }
+                        };
+
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(dynamoInstance.getContext()[tableName]).to.eql([newRecord]);
+                        expect(Attributes).to.deep.equal(newRecord);
+
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
             it('should successfully update and return news values when ReturnValues is ALL_NEW.', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 /* Lets manually insert our record. */
@@ -597,6 +639,48 @@ describe('Dynamock Mock Interface', () => {
                                 last: 'the_builder'
                             }
                         });
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
+            it('should successfully create a new record (upsert) and return record when ReturnValues is UPDATED_NEW', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+
+                const UpdateParams = {
+                    Key: {
+                        id: 'burrito'
+                    },
+                    TableName: tableName,
+                    UpdateExpression: 'set #name = :value_1',
+                    ExpressionAttributeNames: {
+                        '#name': 'name'
+                    },
+                    ExpressionAttributeValues: {
+                        ':value_1': {
+                            first: 'bob',
+                            last: 'the_builder'
+                        }
+                    },
+                    ReturnValues: 'UPDATED_NEW'
+                };
+
+                dynamoInstance.invoke('update', UpdateParams, tableName)
+                    .then(({ Attributes }) => {
+                        const newRecord = {
+                            id: 'burrito',
+                            name: {
+                                first: 'bob',
+                                last: 'the_builder'
+                            }
+                        };
+
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(dynamoInstance.getContext()[tableName]).to.eql([newRecord]);
+                        expect(Attributes).to.deep.equal(newRecord);
+
                         done();
                     })
                     .catch((err) => {
