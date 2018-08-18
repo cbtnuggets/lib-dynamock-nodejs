@@ -687,6 +687,48 @@ describe('Dynamock Mock Interface', () => {
                         done(err);
                     });
             });
+
+            it.only('should support if_not_exists for update expression value', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+
+                const UpdateParams = {
+                    Key: {
+                        id: 'burrito'
+                    },
+                    TableName: tableName,
+                    UpdateExpression: `
+                        SET
+                            #name = :name
+                            #alias = if_not_exists(#alias, :name),
+                    `,
+                    ExpressionAttributeNames: {
+                        '#name': 'name',
+                        '#alias': 'alias'
+                    },
+                    ExpressionAttributeValues: {
+                        ':name': 'bob'
+                    },
+                    ReturnValues: 'ALL_NEW'
+                };
+
+                dynamoInstance.invoke('update', UpdateParams, tableName)
+                    .then(({ Attributes }) => {
+                        const newRecord = {
+                            id: 'burrito',
+                            name: 'bob',
+                            alias: 'bob'
+                        };
+
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(dynamoInstance.getContext()[tableName]).to.eql([newRecord]);
+                        expect(Attributes).to.deep.equal(newRecord);
+
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
         });
 
         describe('QueryItem', () => {
