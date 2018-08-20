@@ -601,7 +601,7 @@ describe('Dynamock Mock Interface', () => {
                             dynamoInstance.invoke('get', { Key: { id: 'burrito', store: 'SuperBurrito' }, TableName: tableName }),
                             dynamoInstance.invoke('get', { Key: { id: 'burrito', store: 'BetterBurrito' }, TableName: tableName })
                         ])
-                            .then(([ { Item: foundRecord1 }, { Item: foundRecord2 } ]) => {
+                            .then(([{ Item: foundRecord1 }, { Item: foundRecord2 }]) => {
                                 expect(foundRecord1).to.deep.equal(exampleRecord0);
 
                                 expect(foundRecord2).to.deep.equal(newRecord);
