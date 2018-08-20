@@ -688,7 +688,7 @@ describe('Dynamock Mock Interface', () => {
                     });
             });
 
-            it.only('should support if_not_exists for update expression value', (done) => {
+            it('should support if_not_exists for update expression value', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
 
                 const UpdateParams = {
@@ -699,7 +699,7 @@ describe('Dynamock Mock Interface', () => {
                     UpdateExpression: `
                         SET
                             #name = :name
-                            #alias = if_not_exists(#alias, :name),
+                            #alias = if_not_exists(#alias, :name)
                     `,
                     ExpressionAttributeNames: {
                         '#name': 'name',
