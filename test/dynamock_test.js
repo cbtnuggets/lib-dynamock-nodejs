@@ -541,6 +541,80 @@ describe('Dynamock Mock Interface', () => {
                     });
             });
 
+            it('should support an update on a value with a complex key', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+
+                const exampleRecord0 = {
+                    id: 'burrito',
+                    store: 'SuperBurrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    }
+                };
+
+                dynamoInstance.addRecordToTable(tableName, exampleRecord0);
+
+                /* Lets manually insert our record. */
+                const exampleRecord1 = {
+                    id: 'burrito',
+                    store: 'BetterBurrito',
+                    name: {
+                        first: 'toucan',
+                        last: 'sam'
+                    }
+                };
+
+                dynamoInstance.addRecordToTable(tableName, exampleRecord1);
+
+                const UpdateParams = {
+                    Key: {
+                        id: 'burrito',
+                        store: 'BetterBurrito'
+                    },
+                    TableName: tableName,
+                    UpdateExpression: 'set #name = :value_1',
+                    ExpressionAttributeNames: {
+                        '#name': 'name'
+                    },
+                    ExpressionAttributeValues: {
+                        ':value_1': {
+                            first: 'sugar',
+                            last: 'bear'
+                        }
+                    },
+                    ReturnValues: 'ALL_NEW'
+                };
+
+                dynamoInstance.invoke('update', UpdateParams, tableName)
+                    .then(({ Attributes }) => {
+                        const newRecord = {
+                            id: 'burrito',
+                            store: 'BetterBurrito',
+                            name: {
+                                first: 'sugar',
+                                last: 'bear'
+                            }
+                        };
+
+                        Promise.all([
+                            dynamoInstance.invoke('get', { Key: { id: 'burrito', store: 'SuperBurrito' }, TableName: tableName }),
+                            dynamoInstance.invoke('get', { Key: { id: 'burrito', store: 'BetterBurrito' }, TableName: tableName })
+                        ])
+                            .then(([ { Item: foundRecord1 }, { Item: foundRecord2 } ]) => {
+                                expect(foundRecord1).to.deep.equal(exampleRecord0);
+
+                                expect(foundRecord2).to.deep.equal(newRecord);
+
+                                done();
+                            })
+                            .catch((e) => done(e));
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
             it('should successfully update and return news values when ReturnValues is ALL_NEW.', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 /* Lets manually insert our record. */
