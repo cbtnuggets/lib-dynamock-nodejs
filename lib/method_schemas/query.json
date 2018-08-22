@@ -21,6 +21,19 @@
         "ExpressionAttributeValues": {
             "type": "object",
             "additionalProperties": true
+        },
+        "Select": {
+            "type": "String",
+            "enum": [
+                "ALL_ATTRIBUTES",
+                "ALL_PROJECTED_ATTRIBUTES",
+                "COUNT",
+                "SPECIFIC_ATTRIBUTES"
+            ],
+            "additionalProperties": false
+        },
+        "AttributesToGet": {
+            "type": "array"
         }
     },
     "required": [
