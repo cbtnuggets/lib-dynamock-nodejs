@@ -1052,6 +1052,65 @@ describe('Dynamock Mock Interface', () => {
                         );
                     });
             });
+
+            it('should take into account Select parameter and only return specified fields', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+
+                /* Lets manually insert our record. */
+                const exampleRecord = {
+                    id: 'burrito',
+                    name: {
+                        first: 'tony_the',
+                        last: 'tiger'
+                    },
+                    full_name: 'tony_the_tiger'
+                };
+
+                dynamoInstance.addRecordToTable(tableName, exampleRecord);
+
+                const exampleRecordDos = {
+                    id: 'burrito',
+                    name: {
+                        first: 'jack_the',
+                        last: 'ripper'
+                    },
+                    full_name: 'jack_the_ripper'
+                };
+
+                dynamoInstance.addRecordToTable(tableName, exampleRecordDos);
+
+                const QueryParams = {
+                    TableName: tableName,
+                    IndexName: 'test-secondary-index',
+                    KeyConditionExpression: 'full_name = :v_fullName',
+                    ExpressionAttributeValues: {
+                        ':v_fullName': 'tony_the_tiger'
+                    },
+                    Select: 'SPECIFIC_ATTRIBUTES',
+                    AttributesToGet: ['full_name']
+                };
+
+                /* Our record should exist within the context. */
+                dynamoInstance.invoke('query', QueryParams, tableName)
+                    .then((results) => {
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(results).to.be.instanceof(Object);
+                        expect(results).to.have.property('Count');
+                        expect(results).to.have.property('Items');
+
+                        const { Count: count, Items: items } = results;
+
+                        expect(count).to.eql(1);
+                        expect(_.head(items)).to.eql({
+                            full_name: 'tony_the_tiger'
+                        });
+
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
         });
     });
 });
