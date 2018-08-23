@@ -968,6 +968,60 @@ describe('Dynamock Mock Interface', () => {
                     });
             });
 
+            it('should support multiple conditions on a query', (done) => {
+                dynamoInstance.addTable(tableName, testModelSchema);
+
+                dynamoInstance.addRecordToTable(tableName, {
+                    user_id: '1000',
+                    resource_id: 'abc123'
+                });
+
+                dynamoInstance.addRecordToTable(tableName, {
+                    user_id: '1000',
+                    resource_id: 'def456'
+                });
+
+                dynamoInstance.addRecordToTable(tableName, {
+                    user_id: '2000',
+                    resource_id: 'abc123'
+                });
+
+                const QueryParams = {
+                    TableName: tableName,
+                    KeyConditionExpression: '#user_id = :user_id and #resource_id = :resource_id',
+                    ExpressionAttributeNames: {
+                        '#user_id': 'user_id',
+                        '#resource_id': 'resource_id'
+                    },
+                    ExpressionAttributeValues: {
+                        ':user_id': '1000',
+                        ':resource_id': 'abc123'
+                    }
+                };
+
+                /* Our record should exist within the context. */
+                dynamoInstance.invoke('query', QueryParams, tableName)
+                    .then((results) => {
+                        /* it is possible that we aren't saving the values correctly... */
+                        expect(results).to.be.instanceof(Object);
+                        expect(results).to.have.property('Count');
+                        expect(results).to.have.property('Items');
+
+                        const { Count: count, Items: items } = results;
+
+                        expect(count).to.eql(1);
+                        expect(_.head(items)).to.deep.equal({
+                            user_id: '1000',
+                            resource_id: 'abc123'
+                        });
+
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    });
+            });
+
             it('should support an advanced Query on an item in the specified table with multiple Conditional Operators. (GSI test)', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 /* Lets manually insert our record. */
