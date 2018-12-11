@@ -11,18 +11,18 @@ Need info? Check the [Wiki](https://github.com/cbtnuggets/lib-dynamock-nodejs/wi
 
 ## Table of Contents
 
-[Introduction](#introduction)
-[Requirements](#requirements)
-[Installation](#installation)
-[Getting Started](#gettingstarted)
-[Usage](#usage)
-[Support](#support)
-[Development](#development)
-[The API](#api)
-[Roadmap](#roadmap)
-[Contributing back](#contibutors)
-[License](#license)
-[Authors](#authors)
+[Introduction](#introduction)  
+[Requirements](#requirements)  
+[Installation](#installation)  
+[Getting Started](#gettingstarted)  
+[Usage](#usage)  
+[Support](#support)  
+[Development](#development)  
+[The API](#api)  
+[Roadmap](#roadmap)  
+[Contributing back](#contibutors)  
+[License](#license)  
+[Authors](#authors)  
 
 <a name="introduction"></a>
 ## Introduction 
