@@ -1,25 +1,34 @@
-{
-    "$schema": "http://json-schema.org/draft-04/schema#",
-        "title": "PutItem Schema",
-        "version": "1.0",
-        "validation": "https://www.npmjs.com/package/json-schema",
-        "type": "object",
-        "properties": {
-            "TableName": {
-                "type": { "$ref": "#/definitions/nonEmptyString" }
-            },
-            "Item": {
-                "type": "Object",
-                "properties": {},
-                "additionalProperties": true
-            }
+const _ = require('lodash');
+
+const {
+    TableName,
+    Item,
+    ConditionExpression,
+    ConditionalOperator,
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    ReturnConsumedCapacity,
+    ReturnItemCollectionMetrics,
+    ReturnValues
+} = require('./common_dynamo_schemas');
+
+module.exports = (() => ({
+    $schema: "http://json-schema.org/draft-04/schema#",
+        title: "PutItem DynamoDB Document Client Schema",
+        version: "1.0",
+        validation: "https://www.npmjs.com/package/json-schema",
+        type: "object",
+        properties: {
+            TableName,
+            Item,
+            ConditionExpression,
+            ConditionalOperator,
+            ExpressionAttributeNames,
+            ExpressionAttributeValues,
+            ReturnConsumedCapacity,
+            ReturnItemCollectionMetrics,
+            ReturnValues
         },
-        "required": [ "Item", "TableName" ],
-        "definitions": {
-            "nonEmptyString": {
-                "type": "string",
-                "minLength": 1
-            }
-        },
-        "additionalProperties": false
-}
+        required: [ "Item", "TableName" ],
+        additionalProperties: false
+}))();
