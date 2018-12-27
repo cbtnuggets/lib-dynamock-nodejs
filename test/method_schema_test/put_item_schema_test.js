@@ -49,22 +49,6 @@ describe('PutItem Request Validator', () => {
     });
 
     it('Should not throw an error if the PutItem request contains valid parameters.', () => {
-        /* Iterate over all of the required parameters? */
-        const testItem = {
-            TableName: mockTableName,
-            Item: {
-                test_attribute: 'burrito',
-                test_attribute_two: {
-                    value_one: 'sub',
-                    value_two: 'par'
-                }
-            }
-        };
-
-        return documentClient.put(testItem).promise()
-            .then(wut => {
-                expect(wut).to.deep.eql({});
-            });
     });
 
     it('Should throw an error if trying to Put to a table does not exist.', () => {

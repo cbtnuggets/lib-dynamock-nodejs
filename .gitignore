@@ -2,3 +2,4 @@ node_modules
 coverage
 keys.js*
 .DS_Store
+.nyc_output
