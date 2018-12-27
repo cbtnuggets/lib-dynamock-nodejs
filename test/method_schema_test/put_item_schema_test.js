@@ -1,9 +1,6 @@
 /**
  * Tests to validate the expectations asserted by the PutItem Querys - basically, if we call an invalid PutItem we should catch it please and thanks.
  */
-
-const { expect } = require('chai');
-
 const Dynamock = require('../../lib/core');
 
 const mockTableSchema = {
@@ -32,20 +29,12 @@ const AWS = require('aws-sdk');
 const AWSMock = require('aws-sdk-mock');
 AWSMock.setSDKInstance(AWS);
 
-let documentClient;
-
 /* Biggest question is how are we programmaticly creating these instances based on parameters. */
 describe('PutItem Request Validator', () => {
     before(() => {
         new Dynamock(AWSMock)
             .createTables(mockTablesToCreate)
             .mockMethods(methodsToMock);
-
-        documentClient = new AWS.DynamoDB.DocumentClient({
-            region: 'foo-1',
-            secretAccessKey: '123',
-            accessKeyId: '456'
-        });
     });
 
     it('Should not throw an error if the PutItem request contains valid parameters.', () => {
