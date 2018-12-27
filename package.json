@@ -1,6 +1,6 @@
 {
   "name": "lib-dynamock-nodejs",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Mocked Dynamo implementation that allows Dynamo API calls to interact with a local in-memory storage system.",
   "main": "lib/core.js",
   "contributors": [
@@ -42,5 +42,5 @@
     "type": "git",
     "url": "https://github.com/cbtnuggets/lib-dynamock-nodejs"
   },
-  "license": "UNLICENSED"
+  "license": "MIT"
 }
