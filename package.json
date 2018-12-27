@@ -16,7 +16,6 @@
     "aws-sdk": "^2.75.0",
     "aws-sdk-mock": "^1.7.0",
     "jsonschema": "^1.2.0",
-    "lib-commons-nodejs": "^1.4.1",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "q": "^1.5.0",
@@ -25,10 +24,8 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "eslint": "^3.18.0",
-    "eslint-config-cbtnuggets": "^5.0.0",
     "jest": "^23.6.0",
     "istanbul": "~0.4.5",
-    "lib-logger-nodejs": "^2.6.0",
     "mocha": "^2.1.0",
     "mockgoose": "6.0.2",
     "mongoose": "4.5.5",
