@@ -125,7 +125,7 @@ describe('Dynamock Mock Interface', () => {
                         const dbContents = dynamoInstance.getContext();
                         expect(dbContents[tableName].length).to.eql(1);
                         /* Compare the item in the context to the item we tried to PUT. */
-                        expect(JSON.stringify(dbContents[tableName][0])).to.eql(JSON.stringify(results));
+                        expect(JSON.stringify({})).to.eql(JSON.stringify(results));
                         done();
                     })
                     .catch((err) => {
@@ -331,7 +331,9 @@ describe('Dynamock Mock Interface', () => {
                 dynamoInstance.invoke('update', UpdateParams, tableName)
                     .then((results) => {
                         /* it is possible that we aren't saving the values correctly... */
-                        expect(dynamoInstance.getContext()[tableName]).to.eql([{
+
+
+    expect(dynamoInstance.getContext()[tableName]).to.eql([{
                             id: 'burrito',
                             name: {
                                 first: 'bob',
@@ -403,25 +405,24 @@ describe('Dynamock Mock Interface', () => {
                     });
             });
 
-            it('should unsuccessfully store a request if missing a required parameter (Key)', (done) => {
+            it('should unsuccessfully store a request if missing a required parameter (Key)', () => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 const UpdateParams = {
                     TableName: tableName,
-                    UpdateExpression: {},
+                    UpdateExpression: 'SET #something = :anotherThing',
                     ExpressionAttributeValues: {},
                     ExpressionAttributeNames: {}
                 };
 
                 dynamoInstance.invoke('update', UpdateParams, tableName)
                     .then((results) => {
-                        done(new Error('We should have thrown a thing at a place.'));
+                        throw (new Error('We should have thrown a thing at a place.'));
                     })
                     .catch((err) => {
                         expect(err).to.be.instanceof(Array);
                         expect(err.length).to.eql(1);
                         expect(_.includes(err[0], 'instance')).to.eql(true);
                         expect(_.includes(err[0], 'Key')).to.eql(true);
-                        done();
                     });
             });
 
@@ -1082,30 +1083,29 @@ describe('Dynamock Mock Interface', () => {
                     });
             });
 
-            it('should unsuccessfully store a request if missing a required parameter (Key)', (done) => {
+            it('should unsuccessfully store a request if missing a required parameter (TableName)', () => {
                 dynamoInstance.addTable(tableName, testModelSchema);
                 const UpdateParams = {
-                    TableName: tableName,
                     UpdateExpression: {},
                     ExpressionAttributeValues: {},
                     ExpressionAttributeNames: {}
                 };
 
                 dynamoInstance.invoke('update', UpdateParams, tableName)
-                    .then((results) => {
-                        done(new Error('We should have thrown a thing at a place.'));
+                    .then(wumpus => {
+                        return Promise.reject('UGH');
                     })
                     .catch((err) => {
+                        if (err === 'UGH') {
+                            return Promise.reject();
+                        }
+
                         expect(err).to.be.instanceof(Array);
                         expect(err.length).to.eql(1);
-                        expect(
-                        _.includes(err[0], 'instance')).to.eql(true);
+                        expect(_.includes(err[0], 'instance')).to.eql(true);
                         expect(_.includes(err[0], 'Key')).to.eql(true);
-                        done(
-
-                        );
                     });
-            });
+           });
 
             it('should take into account Select parameter and only return specified fields', (done) => {
                 dynamoInstance.addTable(tableName, testModelSchema);

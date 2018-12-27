@@ -11,12 +11,11 @@
     }
   ],
   "scripts": {
-    "test": "export NODE_LOGGER_CONSOLE_LEVEL=debug NODE_ENV=test NODE_PATH=$(pwd)/node_modules && find test -name '*_test.js' | xargs istanbul cover _mocha"
+    "test": "export NODE_LOGGER_CONSOLE_LEVEL=debug NODE_ENV=test NODE_PATH=$(pwd)/node_modules && find test -name '*_test.js' | xargs nyc _mocha"
   },
   "dependencies": {
     "aws-sdk": "^2.75.0",
     "aws-sdk-mock": "^1.7.0",
-    "jest": "^23.6.0",
     "jsonschema": "^1.2.0",
     "lib-apple-store-mock-nodejs": "^1.1.0",
     "lib-commons-nodejs": "^1.4.1",
@@ -30,11 +29,13 @@
     "chai": "^3.5.0",
     "eslint": "^3.18.0",
     "eslint-config-cbtnuggets": "^5.0.0",
+    "jest": "^23.6.0",
     "istanbul": "~0.4.5",
     "lib-logger-nodejs": "^2.6.0",
     "mocha": "^2.1.0",
     "mockgoose": "6.0.2",
     "mongoose": "4.5.5",
+    "nyc": "^13.1.0",
     "sinon": "^2.3.6"
   },
   "private": false,
