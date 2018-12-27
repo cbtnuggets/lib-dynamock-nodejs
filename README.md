@@ -11,18 +11,18 @@ Need info? Check the [Wiki](https://github.com/cbtnuggets/lib-dynamock-nodejs/wi
 
 ## Table of Contents
 
-[Introduction](#introduction)
-[Requirements](#requirements)
-[Installation](#installation)
-[Getting Started](#gettingstarted)
-[Usage](#usage)
-[Support](#support)
-[Development](#development)
-[The API](#api)
-[Roadmap](#roadmap)
-[Contributing back](#contibutors)
-[License](#license)
-[Authors](#authors)
+* [Introduction](#introduction)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Getting Started](#gettingstarted)
+* [Usage](#usage)
+* [Support](#support)
+* [Development](#development)
+* [The API](#api)
+* [Roadmap](#roadmap)
+* [Contributing back](#contibutors)
+* [License](#license)
+* [Authors](#authors)
 
 <a name="introduction"></a>
 ## Introduction
@@ -61,11 +61,11 @@ Dynamock allows your Mocha tests to:
 
 **DISCLAIMER!**
 This repository was cooked up quite rapidly and is in an `Early Alpha` stage. There are currently 5 supported methods:
-  -Put
-  -Get
-  -Update
-  -Query
-  -Delete
+  * Put
+  * Get
+  * Update
+  * Query
+  * Delete
 
 While I would like to say that Dynamock provides 100% certainty in your DynamoDB interactions, do not trust us to validate your code as "Production Ready" just quite yet.
 
