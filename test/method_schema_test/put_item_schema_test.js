@@ -4,10 +4,6 @@
 
 const { expect } = require('chai');
 
-const putSchema = require('../../lib/method_schemas/put.js');
-
-const requiredParameters =['Item', 'TableName'];
-
 const Dynamock = require('../../lib/core');
 
 const mockTableSchema = {
@@ -29,21 +25,19 @@ const mockTablesToCreate = [
 ];
 
 /* Next you want to specify which methods you want to mock (to make sure Dynamock supports them...)*/
-const methodsToMock = [ 'put' ];
+const methodsToMock = ['put'];
 
 /* You will also need to pass in your Mocked AWS context like so */
 const AWS = require('aws-sdk');
 const AWSMock = require('aws-sdk-mock');
 AWSMock.setSDKInstance(AWS);
 
-let dynamockInstance;
 let documentClient;
 
 /* Biggest question is how are we programmaticly creating these instances based on parameters. */
 describe('PutItem Request Validator', () => {
     before(() => {
-
-        dynamockInstance = new Dynamock(AWSMock)
+        new Dynamock(AWSMock)
             .createTables(mockTablesToCreate)
             .mockMethods(methodsToMock);
 
@@ -52,10 +46,7 @@ describe('PutItem Request Validator', () => {
             secretAccessKey: '123',
             accessKeyId: '456'
         });
-  });
-
-
-
+    });
 
     it('Should not throw an error if the PutItem request contains valid parameters.', () => {
         /* Iterate over all of the required parameters? */
