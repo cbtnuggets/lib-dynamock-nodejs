@@ -13,11 +13,10 @@ Need info? Check the [Wiki](https://github.com/cbtnuggets/lib-dynamock-nodejs/wi
 
 * [Introduction](#introduction)
 * [Requirements](#requirements)
-* [Installation](#installation)
+* [Supported Methods](#supported_methods)
 * [Getting Started](#gettingstarted)
 * [Usage](#usage)
 * [Support](#support)
-* [Development](#development)
 * [The API](#api)
 * [Roadmap](#roadmap)
 * [Contributing back](#contibutors)
@@ -26,13 +25,13 @@ Need info? Check the [Wiki](https://github.com/cbtnuggets/lib-dynamock-nodejs/wi
 
 <a name="introduction"></a>
 ## Introduction
-When writing REST APIs, Lambdas, or other applications that communicate with DynamoDB - it can be a pain in the ass to deal with setting up a DynamoDB instance just for testing.
+When writing REST APIs, Lambdas, or other applications that communicate with DynamoDB, it can be challenge to deal with setting up a DynamoDB instance just for testing.
 
-At the time this Library was originally conceive, AWS had yet to release their DynamoLocal Solution. After they did, we switched from this rough Mock implementation to the official DynamoLocal .jar - only to find that it is great for a local DynamoDB solution, but underperformed when it came to Unit Testing.
+At the time this Library was originally conceived, AWS had yet to release their DynamoLocal Solution. After they did, we switched from this rough Mock implementation to the official DynamoLocal .jar - only to find that it is great for a local DynamoDB solution, but underperformed when it came to Unit Testing.
 
-In my opinion - the downfall of DynamoDB local is the dependencies it requires to run, when realistically you just want some simple mocked behaviour to test your CRUD application.
+A drawback to DynamoDB local is the dependencies it requires to run, when realistically you just want some simple mocked behaviour to test your CRUD application.
 
-Also in my opinion - the downfall of Dynamock comparitively is the large amount of validation/functionalities that are missing, but that's where you come in!
+Dynamock's goal, comparitively, is to be simple, fast and run where you need it.
 
 <a name="introduction"></a>
 ## Features
@@ -49,30 +48,30 @@ Dynamock allows your Mocha tests to:
 <a name="requirements"></a>
 ## Requirements
 
-**node.js** Library targets 6.9.1
+`Node 6.9.1`
 * Async/Await support coming soon. (Node 8+)
-* Various NPM dependencies...
 
 **Mocha/Jest** Test framework for whatever you want.
-* Mocha is a JavaScript test runner used to organize and execute tests. Mocha runs both on Node.js and in the browser. It provides functionality for testing both synchronous and asynchronous code with a very simple and similar interface. Before you continue, you need to have Mocha installed either globally on your local machine or as a dependency for your project.
+* Mocha is a JavaScript test runner used to organize and execute tests. Before you continue, you need to have Mocha installed either globally on your local machine or as a dependency for your project.
 
-<a name="installation"></a>
-## Installation
+<a name="supported_methods"></a>
+## DynamoDB Methods
 
-**DISCLAIMER!**
-This repository was cooked up quite rapidly and is in an `Early Alpha` stage. There are currently 5 supported methods:
+There are currently 5 supported methods:
   * Put
   * Get
   * Update
   * Query
   * Delete
 
-While I would like to say that Dynamock provides 100% certainty in your DynamoDB interactions, do not trust us to validate your code as "Production Ready" just quite yet.
+Validation of methods and feedback is part of the project roadmap. We are constaly trying to match what AWS makes available. Please submit any issues you find.
 
 <a name="gettingstarted"></a>
 ## Getting Started
 
-Assuming you are already be familiar with Node.js/NPM so just go ahead and run: `npm install --save-dev lib-dynamock-nodejs`.
+Assuming you are already familiar with Node.js/NPM so just go ahead and run:
+
+`npm install --save-dev lib-dynamock-nodejs`.
 
 After you have the Module downloaded and ready for consumption - the below code should get you up and running.
 ```javascript
@@ -129,11 +128,14 @@ it ('should be a test that does a thing', () => {
 **Query Operator**
 
 
-In the world of DynamoDB there is a such a thing as Conditional Operators (=, >=, <=, !=, begins_with, between), unfortunatly Dynamocks implementation is in it's infancy
-and only supports the following Conditional Operators for QueryItem() calls.
-  -=
-  -begins_with
-  -between
+In the world of DynamoDB there is such a thing as Conditional Operators (=, >=, <=, !=, begins_with, between), unfortunatly Dynamock's implementation is in it's infancy
+and only supports the following Conditional Operators for QueryItem() calls:
+
+  `-=`
+
+  `-begins_with`
+
+  `-between`
 
 Also note that you can combine multiple Conditional Operators for an example query such as
 
@@ -142,9 +144,10 @@ const conditionalOperator = 'begins_with(#complex_field, :v_state) and #complex_
 ```
 The implementations of these methods are explicitly defined to what was needed in the initial implementation of our tested applications and could potentially be lacking the functionalities needed by yourself.
 
-Don't fret though! It's super simple to modify the mocked behavior of the method - so feel free to submit a PR to increase the functionality.
+**Don't fret though!** It's super simple to modify the mocked behavior of the method - so feel free to submit a PR to increase the functionality.
 
 Mocked behavior contains two data objects specific to the method being mocked, which consists of:
+
   -Schema: All Dynamo calls contain a number of required and optional parameters. API calls made via Dynamock will utilize JSON-Schema to validate they are correct. The schemas determining the validity of a call can be found at
   `/lib/method_schemas/${method_name}.js`. So if you need more functionality out of a method simply hop into its corresponding Schema and add the necessary parameters.
   Note that the JSON Schema validation is very RELAXED right now.
@@ -156,54 +159,47 @@ Mocked behavior contains two data objects specific to the method being mocked, w
 <a name="support"></a>
 ## Support
 
-_* We're open to suggestions, feel free to message us on [how to get in touch](URL, etc.) or [Create an issue](https://github.com/cbtnuggets/lib-dynamock-nodejs/issues/new).*
-* Pull requests are also welcome!*_
-
-<a name="development"></a>
-## Development
-
-_**Do we need any Development information?**_
-TBD
-
+We're open to suggestions, feel free to message us at `opensource@cbtnuggets.com` or [Create an issue](https://github.com/cbtnuggets/lib-dynamock-nodejs/issues/new).
+_Pull requests are also welcome!_
 <a name="roadmap"></a>
 ## Roadmap
 One of the most difficult things concerning Dynamock is where does its features stop - Is this a Unit Test solution or a fully fledged In-Memory datastore that supports even the most advanced DynamoDB Features?
 
-Honestly - we still don't know, we know what WE are currently using it for but that doesn't mean that it couldn't be adopted for more intense cases.
+Honestly - we still don't know, we have our own use cases, but that doesn't mean that it couldn't be adopted for more intense cases.
 
 As this project (hopefully) grows - here is a list of what I think Dynamock IS and ISN'T at the time of conception.
 
-Dynamock IS:
+Dynamock **IS**:
   * Lightweight
   * In-Memory (No SQLLite, Database files, Redis Stores..)
   * Unit-Testing Solution
   * SDK Compliant  (Validates API Calls according to specified version)
   * Capable of being seeded by CloudFormation and other .yaml/.json resources
 
-Dyanmock ISN'T:
+Dyanmock **ISN'T**:
   * to be used for Performance testing
   * to be relied on for anything pertaining to Read/Write Capacity Units
-  * for use at large scale
-
 
 Here are some features which are either underway or planned:
   * Implementation of AWS errors (Param Validation, Table Validation, Index Validation, Expression Validation)
   * Improved logic for the creation and interaction of Local & Global Secondary Indices
   * Index Validation for Query calls
-  * .... more and more and more, basically this is still missing a TON of Dynamo features, simple error checking, and on and on and on
+  * More DDB features
 
 If you want to see a new feature feel free to [create a new Issue](https://github.com/cbtnuggets/lib-dynamock-nodejs/issues/new)
 
 <a name="contributors"></a>
 ## Contributing back
-This project is still in it's early infancy, so if you'd like to contribute or complain feel free to reach out to @t0nyt93 directly.
+Please submit bug reports and feature requests through the Issues tab.
 
-_See (link to) CONTRIBUTING.md  for information on how to contribute._
+If you would like to submit a pull request, fork the project and make your changes. Create the pull request with the base branch set to `develop`. Include the PR with a corresponding Issue.
+
+Contact `opensource@cbtnuggets.com` directly with any questions you have about contributing to this project.
 
 <a name="license"></a>
 ## License
 
-_Dynamock is made available under the [Name of License](License URL)._
+_Dynamock is made available under the [MIT](https://opensource.org/licenses/MIT) license._
 
 <a name="authors"></a>
 ## Authors
