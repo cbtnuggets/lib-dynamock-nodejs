@@ -2,7 +2,8 @@
 
 echo "Ensuring correct node version:"
 source ${NVM_DIR}/nvm.sh
-nvm install 6.9.1 || nvm use 6.9.1
+node_version="$(cat .nvmrc)"
+nvm install "${node_version}" || nvm use "${node_version}"
 
 NODE_ENV=development npm install
 
