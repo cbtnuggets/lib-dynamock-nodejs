@@ -1,6 +1,6 @@
 {
   "name": "@cbtnuggets/lib-dynamock-nodejs",
-  "version": "1.6.4",
+  "version": "2.0.0",
   "description": "Mocked Dynamo implementation that allows Dynamo API calls to interact with a local in-memory storage system.",
   "main": "lib/core.js",
   "keywords": [
@@ -33,7 +33,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "q": "^1.5.0",
-    "uuid": "^3.0.1"
+    "uuid": "^3.4.0"
   },
   "publishConfig": {},
   "devDependencies": {
